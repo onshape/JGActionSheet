@@ -248,4 +248,10 @@ typedef NS_ENUM(NSUInteger, JGActionSheetArrowDirection) {
  */
 - (void)dismissAnimated:(BOOL)animated;
 
+/**
+ Performs a relayout of the view.
+ @param animated Whether the relayout should happen with an animation.
+ */
+- (void)updateFrameAnimated:(BOOL)animated;
+
 @end
