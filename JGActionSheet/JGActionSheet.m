@@ -627,6 +627,19 @@ static BOOL disableCustomEasing = NO;
 
 #pragma mark Layout
 
+- (void)updateFrameAnimated:(BOOL)animated {
+    // Has the side effect of adjusting the height.
+    if (_anchoredAtPoint) {
+        [self moveToPoint:_anchorPoint arrowDirection:_anchoredArrowDirection animated:animated];
+    }
+    else {
+        // Same duration as moveToPoint
+        [UIView animateWithDuration:(animated ? 0.3 : 0) animations:^{
+            [self layoutSheetInitial:YES];
+        }];
+    }
+}
+
 - (void)layoutSheetForFrame:(CGRect)frame fitToRect:(BOOL)fitToRect initialSetUp:(BOOL)initial continuous:(BOOL)continuous {
     if (continuous) {
         frame.size.width = kFixedWidthContinuous;
