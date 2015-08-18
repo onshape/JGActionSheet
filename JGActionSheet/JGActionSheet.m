@@ -604,7 +604,11 @@ static BOOL disableCustomEasing = NO;
     if (_targetView && !CGRectEqualToRect(self.bounds, _targetView.bounds)) {
         disableCustomEasing = YES;
         [UIView animateWithDuration:(iPad ? 0.4 : 0.3) delay:0.0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut animations:^{
-            if (_anchoredAtPoint) {
+            if (_anchorPointView) {
+                CGPoint p = [self calculateAnchorPointAtView:_anchorPointView inView:_targetView];
+                [self moveToPoint:p arrowDirection:_anchoredArrowDirection animated:NO];
+                NSLog(@"Anchored Arrow Direction - %i", _anchoredArrowDirection);
+            } else if (_anchoredAtPoint) {
                 [self moveToPoint:_anchorPoint arrowDirection:_anchoredArrowDirection animated:NO];
             }
             else {
@@ -615,10 +619,6 @@ static BOOL disableCustomEasing = NO;
         }];
     }
 
-    if (_anchorPointView) {
-        CGPoint p = [self calculateAnchorPointAtView:_anchorPointView inView:_targetView];
-        [self moveToPoint:p arrowDirection:_anchoredArrowDirection animated:NO];
-    }
 }
 
 
@@ -811,14 +811,16 @@ static BOOL disableCustomEasing = NO;
 #pragma mark Showing based on view
 
 - (void)showAtView:(UIView *)anchorView inView:(UIView *)parentView withArrowDirection:(JGActionSheetArrowDirection)arrowDirection animated:(BOOL)isAnimated {
-    NSAssert(!self.visible, @"Action Sheet is already visisble!");
+    NSLog(@"AnchoredArrowDirection ShowAtView %i", _anchoredArrowDirection);
+   // NSAssert(!self.visible, @"Action Sheet is already visisble!");
+    _anchoredArrowDirection = arrowDirection;
+    _targetView = parentView;
+    _anchorPointView = anchorView;
+
     if (!iPad) {
         return [self showInView:parentView animated:isAnimated];
     }
     [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
-    _targetView = parentView;
-    _anchorPointView = anchorView;
-    _anchoredArrowDirection = arrowDirection;
 
     CGPoint covertedPoint = [self calculateAnchorPointAtView:anchorView inView:parentView];
 
@@ -907,7 +909,7 @@ static BOOL disableCustomEasing = NO;
     if (!iPad) {
         return;
     }
-    
+    NSLog(@"Move to point called");
     [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
     
     disableCustomEasing = YES;

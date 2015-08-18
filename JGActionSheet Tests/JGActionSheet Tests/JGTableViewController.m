@@ -161,7 +161,7 @@
     else if (indexPath.row == 2){
         cell.textLabel.text = @"Multiple Sections & Content View";
     } else {
-        cell.textLabel.text = @"Testing";
+        cell.textLabel.text = @"Test Method";
     }
     
     return cell;
@@ -294,8 +294,6 @@
     
     if (anchor && iPad) {
         _anchorView = anchor;
-        _anchorLeft = YES;
-        _currentAnchoredActionSheet = sheet;
         
         CGPoint p = (CGPoint){-5.0f, CGRectGetMidY(anchor.bounds)};
         
@@ -323,7 +321,31 @@
     JGActionSheetSection *section = [JGActionSheetSection sectionWithTitle:@"A Title" message:@"A short message" buttonTitles:@[@"Button 1", @"Button 2"] buttonStyle:JGActionSheetButtonStyleDefault];
     JGActionSheet *sheet = [[JGActionSheet alloc] initWithSections:@[section]];
     sheet.delegate = self;
-    [sheet showAtView:button inView:self.view withArrowDirection:JGActionSheetArrowDirectionTop animated:YES];
 
+    sheet.insets = UIEdgeInsetsMake(20.0f, 0.0f, 0.0f, 0.0f);
+
+    if (button && iPad) {
+        _anchorView = button;
+
+        CGPoint p = (CGPoint){-5.0f, CGRectGetMidY(button.bounds)};
+
+        p = [self.navigationController.view convertPoint:p fromView:button];
+
+        [sheet showAtView:button inView:self.navigationController.view withArrowDirection:JGActionSheetArrowDirectionTop animated:YES];
+    }
+    else {
+
+        [sheet showInView:self.navigationController.view animated:YES];
+    }
+
+    if (iPad) {
+        [sheet setOutsidePressBlock:^(JGActionSheet *sheet) {
+            [sheet dismissAnimated:YES];
+        }];
+    }
+
+    [sheet setButtonPressedBlock:^(JGActionSheet *sheet, NSIndexPath *indexPath) {
+        [sheet dismissAnimated:YES];
+    }];
 }
 @end
