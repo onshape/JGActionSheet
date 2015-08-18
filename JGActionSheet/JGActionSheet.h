@@ -247,6 +247,8 @@ typedef NS_ENUM(NSUInteger, JGActionSheetArrowDirection) {
  @param animated Whether the action sheet should be dismissed with an animation.
  */
 - (void)dismissAnimated:(BOOL)animated;
+- (void)showAtView:(UIView *)anchorView inView:(UIView *)parentView withArrowDirection:(JGActionSheetArrowDirection)arrowDirection animated:(BOOL)isAnimated;
+
 
 /**
  Performs a relayout of the view.

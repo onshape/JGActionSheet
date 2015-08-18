@@ -74,32 +74,32 @@
     
     NSArray *sections = (iPad ? @[section] : @[section, [JGActionSheetSection sectionWithTitle:nil message:nil buttonTitles:@[@"Cancel"] buttonStyle:JGActionSheetButtonStyleCancel]]);
     
-    JGActionSheet *sheet = [[JGActionSheet alloc] initWithSections:sections];
-    
+    JGActionSheet *sheet = [[JGActionSheet alloc] initWithSections:sections];   
     sheet.delegate = self;
-    
+
     [sheet setButtonPressedBlock:^(JGActionSheet *sheet, NSIndexPath *indexPath) {
         [sheet dismissAnimated:YES];
     }];
-    
+
     if (iPad) {
         [sheet setOutsidePressBlock:^(JGActionSheet *sheet) {
             [sheet dismissAnimated:YES];
         }];
-        
+
         CGPoint point = (CGPoint){CGRectGetMidX(view.bounds), CGRectGetMaxY(view.bounds)};
-        
+
         point = [self.navigationController.view convertPoint:point fromView:view];
-        
+
         _currentAnchoredActionSheet = sheet;
         _anchorView = view;
         _anchorLeft = NO;
-        
+
         [sheet showFromPoint:point inView:self.navigationController.view arrowDirection:JGActionSheetArrowDirectionTop animated:YES];
     }
     else {
         [sheet showInView:self.navigationController.view animated:YES];
     }
+
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
@@ -133,7 +133,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     // Return the number of rows in the section.
-    return 3;
+    return 4;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -158,8 +158,10 @@
     else if (indexPath.row == 1) {
         cell.textLabel.text = @"Multiple Sections";
     }
-    else {
+    else if (indexPath.row == 2){
         cell.textLabel.text = @"Multiple Sections & Content View";
+    } else {
+        cell.textLabel.text = @"Testing";
     }
     
     return cell;
@@ -172,8 +174,10 @@
     else if (button.tag == 1) {
         [self multipleSections:button];
     }
-    else {
+    else if (button.tag == 2){
         [self multipleAndContentView:button];
+    } else {
+        [self testMethod:button];
     }
 }
 
@@ -231,13 +235,13 @@
     JGActionSheetSection *s1 = [JGActionSheetSection sectionWithTitle:@"A Title" message:@"A short message" buttonTitles:@[@"Button 1", @"Button 2", @"Button 3"] buttonStyle:JGActionSheetButtonStyleDefault];
     
     JGActionSheetSection *s2 = [JGActionSheetSection sectionWithTitle:@"Another Title" message:@"A long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long, very long message!" buttonTitles:@[@"Red Button", @"Green Button", @"Blue Button"] buttonStyle:JGActionSheetButtonStyleDefault];
-    
+
     [s2 setButtonStyle:JGActionSheetButtonStyleRed forButtonAtIndex:0];
     [s2 setButtonStyle:JGActionSheetButtonStyleGreen forButtonAtIndex:1];
     [s2 setButtonStyle:JGActionSheetButtonStyleBlue forButtonAtIndex:2];
-    
+
     JGActionSheet *sheet = [JGActionSheet actionSheetWithSections:@[s1, s2, [JGActionSheetSection sectionWithTitle:nil message:nil buttonTitles:@[@"Cancel"] buttonStyle:JGActionSheetButtonStyleCancel]]];
-    
+
     sheet.delegate = self;
     
     sheet.insets = UIEdgeInsetsMake(20.0f, 0.0f, 0.0f, 0.0f);
@@ -314,4 +318,17 @@
     }];
 }
 
+- (void)testMethod:(UIView *)button {
+
+    JGActionSheetSection *section = [JGActionSheetSection sectionWithTitle:@"A Title" message:@"A short message" buttonTitles:@[@"Button 1", @"Button 2"] buttonStyle:JGActionSheetButtonStyleDefault];
+    JGActionSheet *sheet = [[JGActionSheet alloc] initWithSections:@[section]];
+    sheet.delegate = self;
+//    CGPoint p = [self.view.window convertPoint:button.bounds.origin fromView:button];
+//    [sheet showFromPoint:p
+//                  inView:self.view
+//          arrowDirection:JGActionSheetArrowDirectionTop
+//                animated:YES];
+    [sheet showAtView:button inView:self.view withArrowDirection:JGActionSheetArrowDirectionTop animated:YES];
+
+}
 @end

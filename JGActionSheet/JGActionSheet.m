@@ -506,6 +506,7 @@ static BOOL disableCustomEasing = NO;
     BOOL _anchoredAtPoint;
     CGPoint _anchorPoint;
     JGActionSheetArrowDirection _anchoredArrowDirection;
+    UIView *_anchorPointView;
 }
 
 @end
@@ -613,7 +614,13 @@ static BOOL disableCustomEasing = NO;
             disableCustomEasing = NO;
         }];
     }
+
+    if (_anchorPointView) {
+        CGPoint p = [self calculateAnchorPoint:_anchorPointView inView:_targetView];
+        [self moveToPoint:p arrowDirection:_anchoredArrowDirection animated:NO];
+    }
 }
+
 
 - (void)buttonPressed:(NSIndexPath *)indexPath {
     if (self.buttonPressedBlock) {
@@ -799,6 +806,54 @@ static BOOL disableCustomEasing = NO;
     frame = UIEdgeInsetsInsetRect(frame, self.insets);
     
     [self layoutSheetForFrame:frame fitToRect:!iPad initialSetUp:initial continuous:NO];
+}
+
+#pragma mark Showing based on view
+
+- (void)showAtView:(UIView *)anchorView inView:(UIView *)parentView withArrowDirection:(JGActionSheetArrowDirection)arrowDirection animated:(BOOL)isAnimated {
+    NSAssert(!self.visible, @"Action Sheet is already visisble!");
+    if (!iPad) {
+        return [self showInView:parentView animated:isAnimated];
+    }
+    [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+    _targetView = parentView;
+    _anchorPointView = anchorView;
+    _anchoredArrowDirection = arrowDirection;
+
+    CGPoint covertedPoint = [self calculateAnchorPoint:anchorView inView:parentView];
+
+    [self moveToPoint:covertedPoint arrowDirection:arrowDirection animated:isAnimated];
+
+    if ([self.delegate respondsToSelector:@selector(actionSheetWillPresent:)]) {
+        [self.delegate actionSheetWillPresent:self];
+    }
+
+    void (^completion)(void) = ^{
+        [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+
+        if ([self.delegate respondsToSelector:@selector(actionSheetDidPresent:)]) {
+            [self.delegate actionSheetDidPresent:self];
+        }
+    };
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationChanged) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
+
+    [self layoutForVisible:!isAnimated];
+
+    [_targetView addSubview:self];
+
+    if (!isAnimated) {
+        completion();
+    }
+    else {
+        CGFloat duration = 0.3f;
+
+        [UIView animateWithDuration:duration animations:^{
+            [self layoutForVisible:YES];
+        } completion:^(BOOL finished) {
+            completion();
+        }];
+    }
 }
 
 #pragma mark Showing From Point
@@ -1047,6 +1102,30 @@ static BOOL disableCustomEasing = NO;
 
 - (BOOL)isVisible {
     return (_targetView != nil);
+}
+
+#pragma mark Point calculation
+
+- (CGPoint)calculateAnchorPoint:(UIView *)anchorView inView:(UIView *)parentView {
+    CGPoint anchorPoint;
+    switch (_anchoredArrowDirection) {
+        case JGActionSheetArrowDirectionTop:
+            anchorPoint = CGPointMake(anchorView.bounds.origin.x + anchorView.frame.size.width/2., anchorView.bounds.origin.y + anchorView.frame.size.height);
+            break;
+        case JGActionSheetArrowDirectionBottom:
+            anchorPoint = CGPointMake(anchorView.bounds.origin.x + anchorView.frame.size.width/2., anchorView.bounds.origin.y);
+            break;
+        case JGActionSheetArrowDirectionLeft:
+            anchorPoint = CGPointMake(anchorView.bounds.origin.x + anchorView.frame.size.width, anchorView.bounds.origin.y + anchorView.frame.size.height/2.);
+            break;
+        case JGActionSheetArrowDirectionRight:
+            anchorPoint = CGPointMake(anchorView.bounds.origin.x, anchorView.bounds.origin.y + anchorView.frame.size.height/2.);
+            break;
+        default:
+            break;
+    }
+    CGPoint convertedAnchorPoint = [parentView.window convertPoint:anchorPoint fromView:anchorView];
+    return convertedAnchorPoint;
 }
 
 @end
