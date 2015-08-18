@@ -247,6 +247,16 @@ typedef NS_ENUM(NSUInteger, JGActionSheetArrowDirection) {
  @param animated Whether the action sheet should be dismissed with an animation.
  */
 - (void)dismissAnimated:(BOOL)animated;
+
+/** Shows the action sheet anchored to a specific view based on the arrow direction
+ @param anchorView the view that the sheet will be anchored to and the position point will be calculated from
+ @param parentView the hosting view in which the action sheet should be shown
+ @param arrowDirection The direction in which the arrow should show and the side of the section at which the arrow should be placed.
+ @param animated Whether the action sheet should show with an animation.
+
+ @Attention This method is only available on iPad devices.
+ */
+
 - (void)showAtView:(UIView *)anchorView inView:(UIView *)parentView withArrowDirection:(JGActionSheetArrowDirection)arrowDirection animated:(BOOL)isAnimated;
 
 

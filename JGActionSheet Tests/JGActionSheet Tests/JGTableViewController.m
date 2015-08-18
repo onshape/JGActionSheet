@@ -300,8 +300,8 @@
         CGPoint p = (CGPoint){-5.0f, CGRectGetMidY(anchor.bounds)};
         
         p = [self.navigationController.view convertPoint:p fromView:anchor];
-        
-        [sheet showFromPoint:p inView:self.navigationController.view arrowDirection:JGActionSheetArrowDirectionRight animated:YES];
+
+       [sheet showAtView:anchor inView:self.navigationController.view withArrowDirection:JGActionSheetArrowDirectionRight animated:YES];
     }
     else {
         [sheet showInView:self.navigationController.view animated:YES];
@@ -323,11 +323,6 @@
     JGActionSheetSection *section = [JGActionSheetSection sectionWithTitle:@"A Title" message:@"A short message" buttonTitles:@[@"Button 1", @"Button 2"] buttonStyle:JGActionSheetButtonStyleDefault];
     JGActionSheet *sheet = [[JGActionSheet alloc] initWithSections:@[section]];
     sheet.delegate = self;
-//    CGPoint p = [self.view.window convertPoint:button.bounds.origin fromView:button];
-//    [sheet showFromPoint:p
-//                  inView:self.view
-//          arrowDirection:JGActionSheetArrowDirectionTop
-//                animated:YES];
     [sheet showAtView:button inView:self.view withArrowDirection:JGActionSheetArrowDirectionTop animated:YES];
 
 }
