@@ -258,7 +258,9 @@ typedef NS_ENUM(NSUInteger, JGActionSheetArrowDirection) {
  */
 
 - (void)showAtView:(UIView *)anchorView inView:(UIView *)parentView withArrowDirection:(JGActionSheetArrowDirection)arrowDirection animated:(BOOL)isAnimated;
-
+/** Calculates the point the sheet should be anchored at depending on the view
+ **/
+- (CGPoint)calculateAnchorPointAtView:(UIView *)anchorView inView:(UIView *)parentView;
 
 /**
  Performs a relayout of the view.

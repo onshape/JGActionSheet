@@ -601,24 +601,21 @@ static BOOL disableCustomEasing = NO;
 }
 
 - (void)orientationChanged {
-    if (_targetView && !CGRectEqualToRect(self.bounds, _targetView.bounds)) {
-        disableCustomEasing = YES;
-        [UIView animateWithDuration:(iPad ? 0.4 : 0.3) delay:0.0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut animations:^{
-            if (_anchorPointView) {
-                CGPoint p = [self calculateAnchorPointAtView:_anchorPointView inView:_targetView];
-                [self moveToPoint:p arrowDirection:_anchoredArrowDirection animated:NO];
-                NSLog(@"Anchored Arrow Direction - %i", _anchoredArrowDirection);
-            } else if (_anchoredAtPoint) {
-                [self moveToPoint:_anchorPoint arrowDirection:_anchoredArrowDirection animated:NO];
-            }
-            else {
-                [self layoutSheetInitial:NO];
-            }
-        } completion:^(BOOL finished) {
-            disableCustomEasing = NO;
-        }];
-    }
-
+    disableCustomEasing = YES;
+    [UIView animateWithDuration:(iPad ? 0.4 : 0.3) delay:0.0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut animations:^{
+        if (_anchorPointView) {
+            CGPoint p = [self calculateAnchorPointAtView:_anchorPointView inView:_targetView];
+            [self moveToPoint:p arrowDirection:_anchoredArrowDirection animated:NO];
+            NSLog(@"Anchored Arrow Direction - %i", _anchoredArrowDirection);
+        } else if (_anchoredAtPoint) {
+            [self moveToPoint:_anchorPoint arrowDirection:_anchoredArrowDirection animated:NO];
+        }
+        else {
+            [self layoutSheetInitial:NO];
+        }
+    } completion:^(BOOL finished) {
+        disableCustomEasing = NO;
+    }];
 }
 
 

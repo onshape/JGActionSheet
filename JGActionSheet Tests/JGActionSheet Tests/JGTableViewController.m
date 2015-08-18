@@ -299,7 +299,7 @@
         
         p = [self.navigationController.view convertPoint:p fromView:anchor];
 
-       [sheet showAtView:anchor inView:self.navigationController.view withArrowDirection:JGActionSheetArrowDirectionRight animated:YES];
+       [sheet showAtView:anchor inView:self.navigationController.view withArrowDirection:JGActionSheetArrowDirectionRight animated:NO];
     }
     else {
         [sheet showInView:self.navigationController.view animated:YES];
@@ -331,7 +331,7 @@
 
         p = [self.navigationController.view convertPoint:p fromView:button];
 
-        [sheet showAtView:button inView:self.navigationController.view withArrowDirection:JGActionSheetArrowDirectionTop animated:YES];
+        [sheet showAtView:button inView:self.navigationController.view withArrowDirection:JGActionSheetArrowDirectionTop animated:NO];
     }
     else {
 
