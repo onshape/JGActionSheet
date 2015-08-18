@@ -616,7 +616,7 @@ static BOOL disableCustomEasing = NO;
     }
 
     if (_anchorPointView) {
-        CGPoint p = [self calculateAnchorPoint:_anchorPointView inView:_targetView];
+        CGPoint p = [self calculateAnchorPointAtView:_anchorPointView inView:_targetView];
         [self moveToPoint:p arrowDirection:_anchoredArrowDirection animated:NO];
     }
 }
@@ -820,7 +820,7 @@ static BOOL disableCustomEasing = NO;
     _anchorPointView = anchorView;
     _anchoredArrowDirection = arrowDirection;
 
-    CGPoint covertedPoint = [self calculateAnchorPoint:anchorView inView:parentView];
+    CGPoint covertedPoint = [self calculateAnchorPointAtView:anchorView inView:parentView];
 
     [self moveToPoint:covertedPoint arrowDirection:arrowDirection animated:isAnimated];
 
@@ -1106,7 +1106,7 @@ static BOOL disableCustomEasing = NO;
 
 #pragma mark Point calculation
 
-- (CGPoint)calculateAnchorPoint:(UIView *)anchorView inView:(UIView *)parentView {
+- (CGPoint)calculateAnchorPointAtView:(UIView *)anchorView inView:(UIView *)parentView {
     CGPoint anchorPoint;
     switch (_anchoredArrowDirection) {
         case JGActionSheetArrowDirectionTop:
