@@ -326,7 +326,7 @@
 
     if (button && iPad) {
         _anchorView = button;
-
+   
         CGPoint p = (CGPoint){-5.0f, CGRectGetMidY(button.bounds)};
 
         p = [self.navigationController.view convertPoint:p fromView:button];

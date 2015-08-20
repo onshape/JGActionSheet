@@ -603,6 +603,8 @@ static BOOL disableCustomEasing = NO;
 - (void)orientationChanged {
     disableCustomEasing = YES;
     [UIView animateWithDuration:(iPad ? 0.4 : 0.3) delay:0.0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut animations:^{
+    } completion:^(BOOL finished) {
+        disableCustomEasing = NO;
         if (_anchorPointView) {
             CGPoint p = [self calculateAnchorPointAtView:_anchorPointView inView:_targetView];
             [self moveToPoint:p arrowDirection:_anchoredArrowDirection animated:NO];
@@ -613,8 +615,6 @@ static BOOL disableCustomEasing = NO;
         else {
             [self layoutSheetInitial:NO];
         }
-    } completion:^(BOOL finished) {
-        disableCustomEasing = NO;
     }];
 }
 
@@ -835,7 +835,7 @@ static BOOL disableCustomEasing = NO;
         }
     };
 
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationChanged) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationChanged) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
 
     [self layoutForVisible:!isAnimated];
 
