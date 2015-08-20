@@ -608,7 +608,6 @@ static BOOL disableCustomEasing = NO;
         if (_anchorPointView) {
             CGPoint p = [self calculateAnchorPointAtView:_anchorPointView inView:_targetView];
             [self moveToPoint:p arrowDirection:_anchoredArrowDirection animated:NO];
-            NSLog(@"Anchored Arrow Direction - %i", _anchoredArrowDirection);
         } else if (_anchoredAtPoint) {
             [self moveToPoint:_anchorPoint arrowDirection:_anchoredArrowDirection animated:NO];
         }
@@ -808,8 +807,7 @@ static BOOL disableCustomEasing = NO;
 #pragma mark Showing based on view
 
 - (void)showAtView:(UIView *)anchorView inView:(UIView *)parentView withArrowDirection:(JGActionSheetArrowDirection)arrowDirection animated:(BOOL)isAnimated {
-    NSLog(@"AnchoredArrowDirection ShowAtView %i", _anchoredArrowDirection);
-   // NSAssert(!self.visible, @"Action Sheet is already visisble!");
+    NSAssert(!self.visible, @"Action Sheet is already visisble!");
     _anchoredArrowDirection = arrowDirection;
     _targetView = parentView;
     _anchorPointView = anchorView;
@@ -906,7 +904,6 @@ static BOOL disableCustomEasing = NO;
     if (!iPad) {
         return;
     }
-    NSLog(@"Move to point called");
     [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
     
     disableCustomEasing = YES;
