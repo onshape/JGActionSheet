@@ -608,7 +608,15 @@ static BOOL disableCustomEasing = NO;
     [UIView animateWithDuration:(iPad ? 0.4 : 0.3) delay:0.0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut animations:^{
     } completion:^(BOOL finished) {
         disableCustomEasing = NO;
-        if (_anchorPointView) {
+        if (_anchorViewParentCollectionView) {
+            _anchorPointView = [_anchorViewParentCollectionView cellForItemAtIndexPath:_anchorCellIndexPath];
+            CGPoint p = [self calculateAnchorPointAtView:_anchorPointView inView:_targetView];
+            [self moveToPoint:p arrowDirection:_anchoredArrowDirection animated:NO];
+        } else if (_anchorViewParentTableView) {
+            _anchorPointView = [_anchorViewParentTableView cellForRowAtIndexPath:_anchorCellIndexPath];
+            CGPoint p = [self calculateAnchorPointAtView:_anchorPointView inView:_targetView];
+            [self moveToPoint:p arrowDirection:_anchoredArrowDirection animated:NO];
+        }else if (_anchorPointView) {
             CGPoint p = [self calculateAnchorPointAtView:_anchorPointView inView:_targetView];
             [self moveToPoint:p arrowDirection:_anchoredArrowDirection animated:NO];
         } else if (_anchoredAtPoint) {
