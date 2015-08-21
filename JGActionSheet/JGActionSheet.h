@@ -257,7 +257,13 @@ typedef NS_ENUM(NSUInteger, JGActionSheetArrowDirection) {
  @Attention This method is only available on iPad devices.
  */
 
-- (void)showAtView:(UIView *)anchorView inView:(UIView *)parentView withArrowDirection:(JGActionSheetArrowDirection)arrowDirection animated:(BOOL)isAnimated;
+- (void)showAtView:(UIView *)anchorView inView:(UIView *)displayView withArrowDirection:(JGActionSheetArrowDirection)arrowDirection animated:(BOOL)isAnimated;
+
+/** These two methods set variables based on whether or not the parent view of the cell is a table view or collection view
+ **/
+- (void)configureForCollectionView:(UICollectionView *)collectionView forCellAtIndexPath:(NSIndexPath *)indexPath;
+- (void)configureForTableView:(UITableView *)tableView forCellAtIndexPath:(NSIndexPath *)indexPath;
+
 /** Calculates the point the sheet should be anchored at depending on the view
  **/
 - (CGPoint)calculateAnchorPointAtView:(UIView *)anchorView inView:(UIView *)parentView;

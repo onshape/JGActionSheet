@@ -507,6 +507,9 @@ static BOOL disableCustomEasing = NO;
     CGPoint _anchorPoint;
     JGActionSheetArrowDirection _anchoredArrowDirection;
     UIView *_anchorPointView;
+    UICollectionView *_anchorViewParentCollectionView;
+    UITableView *_anchorViewParentTableView;
+    NSIndexPath *_anchorCellIndexPath;
 }
 
 @end
@@ -806,20 +809,35 @@ static BOOL disableCustomEasing = NO;
 
 #pragma mark Showing based on view
 
-- (void)showAtView:(UIView *)anchorView inView:(UIView *)parentView withArrowDirection:(JGActionSheetArrowDirection)arrowDirection animated:(BOOL)isAnimated {
+- (void)showAtView:(UIView *)anchorView inView:(UIView *)displayView withArrowDirection:(JGActionSheetArrowDirection)arrowDirection animated:(BOOL)isAnimated {
     NSAssert(!self.visible, @"Action Sheet is already visisble!");
     _anchoredArrowDirection = arrowDirection;
-    _targetView = parentView;
+    _targetView = displayView;
     _anchorPointView = anchorView;
 
-    if (!iPad) {
-        return [self showInView:parentView animated:isAnimated];
-    }
     [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
 
-    CGPoint covertedPoint = [self calculateAnchorPointAtView:anchorView inView:parentView];
+    CGPoint covertedPoint = [self calculateAnchorPointAtView:anchorView inView:displayView];
 
     [self moveToPoint:covertedPoint arrowDirection:arrowDirection animated:isAnimated];
+    [self configureActionSheet:displayView animated:isAnimated];
+    
+}
+
+- (void)configureForCollectionView:(UICollectionView *)collectionView forCellAtIndexPath:(NSIndexPath *)indexPath {
+    _anchorViewParentCollectionView = collectionView;
+    _anchorCellIndexPath = indexPath;
+}
+
+- (void)configureForTableView:(UITableView *)tableView forCellAtIndexPath:(NSIndexPath *)indexPath {
+    _anchorViewParentTableView = tableView;
+    _anchorCellIndexPath = indexPath;
+}
+
+- (void)configureActionSheet:(UIView *)displayView animated:(BOOL)isAnimated {
+    if (!iPad) {
+        return [self showInView:displayView animated:isAnimated];
+    }
 
     if ([self.delegate respondsToSelector:@selector(actionSheetWillPresent:)]) {
         [self.delegate actionSheetWillPresent:self];
@@ -834,7 +852,6 @@ static BOOL disableCustomEasing = NO;
     };
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationChanged) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
-
     [self layoutForVisible:!isAnimated];
 
     [_targetView addSubview:self];
