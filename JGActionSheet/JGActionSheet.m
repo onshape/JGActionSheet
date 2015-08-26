@@ -611,14 +611,14 @@ static BOOL disableCustomEasing = NO;
         if (_anchorViewParentCollectionView) {
             _anchorPointView = [_anchorViewParentCollectionView cellForItemAtIndexPath:_anchorCellIndexPath];
             CGPoint p = [self calculateAnchorPointAtView:_anchorPointView inView:_targetView];
-            [self moveToPoint:p arrowDirection:_anchoredArrowDirection animated:NO];
+            [self anchorSheetAtPoint:p withArrowDirection:_anchoredArrowDirection availableFrame:_targetView.frame];
         } else if (_anchorViewParentTableView) {
             _anchorPointView = [_anchorViewParentTableView cellForRowAtIndexPath:_anchorCellIndexPath];
             CGPoint p = [self calculateAnchorPointAtView:_anchorPointView inView:_targetView];
-            [self moveToPoint:p arrowDirection:_anchoredArrowDirection animated:NO];
+            [self anchorSheetAtPoint:p withArrowDirection:_anchoredArrowDirection availableFrame:_targetView.frame];
         }else if (_anchorPointView) {
             CGPoint p = [self calculateAnchorPointAtView:_anchorPointView inView:_targetView];
-            [self moveToPoint:p arrowDirection:_anchoredArrowDirection animated:NO];
+            [self anchorSheetAtPoint:p withArrowDirection:_anchoredArrowDirection availableFrame:_targetView.frame];
         } else if (_anchoredAtPoint) {
             [self moveToPoint:_anchorPoint arrowDirection:_anchoredArrowDirection animated:NO];
         }
@@ -829,6 +829,7 @@ static BOOL disableCustomEasing = NO;
 
     [self moveToPoint:covertedPoint arrowDirection:arrowDirection animated:isAnimated];
     [self configureActionSheet:displayView animated:isAnimated];
+    self.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     
 }
 
