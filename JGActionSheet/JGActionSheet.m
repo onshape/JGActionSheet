@@ -620,7 +620,7 @@ static BOOL disableCustomEasing = NO;
             CGPoint p = [self calculateAnchorPointAtView:_anchorPointView inView:_targetView];
             [self anchorSheetAtPoint:p withArrowDirection:_anchoredArrowDirection availableFrame:_targetView.frame];
         } else if (_anchoredAtPoint) {
-            [self moveToPoint:_anchorPoint arrowDirection:_anchoredArrowDirection animated:NO];
+            [self anchorSheetAtPoint:_anchorPoint withArrowDirection:_anchoredArrowDirection availableFrame:_targetView.frame];
         }
         else {
             [self layoutSheetInitial:NO];
@@ -937,7 +937,7 @@ static BOOL disableCustomEasing = NO;
     NSAssert(self.visible, @"Action Sheet requires to be visible in order to move the anchor point!");
     
     void (^changes)(void) = ^{
-        self.frame = _targetView.bounds;
+        self.frame = [self generateBackgroundFrame];
         
         CGRect finalFrame = CGRectZero;
         
@@ -1009,7 +1009,8 @@ static BOOL disableCustomEasing = NO;
     _anchoredAtPoint = YES;
     _anchorPoint = point;
     _anchoredArrowDirection = arrowDirection;
-    
+
+    self.frame = [self generateBackgroundFrame];
     CGRect finalFrame = _scrollViewHost.frame;
     
     CGFloat arrowHeight = kArrowHeight;
@@ -1150,4 +1151,12 @@ static BOOL disableCustomEasing = NO;
     return convertedAnchorPoint;
 }
 
+- (CGRect)generateBackgroundFrame {
+    // TODO: Figure out why frame is visibly shifting (can see white space on rotation), use this until then
+    if (_targetView.bounds.size.width > _targetView.bounds.size.height) {
+        return CGRectMake(0, 0, _targetView.bounds.size.width, _targetView.bounds.size.width);
+    } else {
+        return CGRectMake(0, 0, _targetView.bounds.size.height, _targetView.bounds.size.height);
+    }
+}
 @end
