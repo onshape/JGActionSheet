@@ -248,7 +248,8 @@ typedef NS_ENUM(NSUInteger, JGActionSheetArrowDirection) {
  */
 - (void)dismissAnimated:(BOOL)animated;
 
-/** Shows the action sheet anchored to a specific view based on the arrow direction
+/** 
+ Shows the action sheet anchored to a specific view based on the arrow direction
  @param anchorView the view that the sheet will be anchored to and the position point will be calculated from
  @param parentView the hosting view in which the action sheet should be shown
  @param arrowDirection The direction in which the arrow should show and the side of the section at which the arrow should be placed.
@@ -259,12 +260,14 @@ typedef NS_ENUM(NSUInteger, JGActionSheetArrowDirection) {
 
 - (void)showAtView:(UIView *)anchorView inView:(UIView *)displayView withArrowDirection:(JGActionSheetArrowDirection)arrowDirection animated:(BOOL)isAnimated;
 
-/** These two methods set variables based on whether or not the parent view of the cell is a table view or collection view
+/** 
+ These two methods set variables based on whether or not the parent view of the cell is a table view or collection view
  **/
 - (void)configureForCollectionView:(UICollectionView *)collectionView forCellAtIndexPath:(NSIndexPath *)indexPath;
 - (void)configureForTableView:(UITableView *)tableView forCellAtIndexPath:(NSIndexPath *)indexPath;
 
-/** Calculates the point the sheet should be anchored at depending on the view
+/** 
+ Calculates the point the sheet should be anchored at depending on the view
  **/
 - (CGPoint)calculateAnchorPointAtView:(UIView *)anchorView inView:(UIView *)parentView;
 
