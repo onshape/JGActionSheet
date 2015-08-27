@@ -177,7 +177,7 @@
     else if (button.tag == 2){
         [self multipleAndContentView:button];
     } else {
-        [self testMethod:button];
+        [self createSheetWithShowAtView:button];
     }
 }
 
@@ -316,7 +316,7 @@
     }];
 }
 
-- (void)testMethod:(UIView *)button {
+- (void)createSheetWithShowAtView:(UIView *)button {
 
     JGActionSheetSection *section = [JGActionSheetSection sectionWithTitle:@"A Title" message:@"A short message" buttonTitles:@[@"Button 1", @"Button 2"] buttonStyle:JGActionSheetButtonStyleDefault];
     JGActionSheet *sheet = [[JGActionSheet alloc] initWithSections:@[section]];

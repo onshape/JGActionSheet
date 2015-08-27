@@ -753,7 +753,7 @@ static BOOL disableCustomEasing = NO;
 #pragma mark Showing
 
 - (void)showInView:(UIView *)view animated:(BOOL)animated {
-    NSAssert(!self.visible, @"Action Sheet is already visisble!");
+    NSAssert(!self.visible, @"Action Sheet is already visible!");
     
     [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
     
@@ -818,16 +818,16 @@ static BOOL disableCustomEasing = NO;
 #pragma mark Showing based on view
 
 - (void)showAtView:(UIView *)anchorView inView:(UIView *)displayView withArrowDirection:(JGActionSheetArrowDirection)arrowDirection animated:(BOOL)isAnimated {
-    NSAssert(!self.visible, @"Action Sheet is already visisble!");
+    NSAssert(!self.visible, @"Action Sheet is already visible!");
     _anchoredArrowDirection = arrowDirection;
     _targetView = displayView;
     _anchorPointView = anchorView;
 
     [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
 
-    CGPoint covertedPoint = [self calculateAnchorPointAtView:anchorView inView:displayView];
+    CGPoint convertedPoint = [self calculateAnchorPointAtView:anchorView inView:displayView];
 
-    [self moveToPoint:covertedPoint arrowDirection:arrowDirection animated:isAnimated];
+    [self moveToPoint:convertedPoint arrowDirection:arrowDirection animated:isAnimated];
     [self configureActionSheet:displayView animated:isAnimated];
     self.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     
@@ -882,7 +882,7 @@ static BOOL disableCustomEasing = NO;
 #pragma mark Showing From Point
 
 - (void)showFromPoint:(CGPoint)point inView:(UIView *)view arrowDirection:(JGActionSheetArrowDirection)arrowDirection animated:(BOOL)animated {
-    NSAssert(!self.visible, @"Action Sheet is already visisble!");
+    NSAssert(!self.visible, @"Action Sheet is already visible!");
     
     if (!iPad) {
         return [self showInView:view animated:animated];
