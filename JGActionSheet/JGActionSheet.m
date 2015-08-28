@@ -819,6 +819,10 @@ static BOOL disableCustomEasing = NO;
 
 - (void)showAtView:(UIView *)anchorView inView:(UIView *)displayView withArrowDirection:(JGActionSheetArrowDirection)arrowDirection animated:(BOOL)isAnimated {
     NSAssert(!self.visible, @"Action Sheet is already visible!");
+
+    if (!iPad) {
+        return [self showInView:displayView animated:isAnimated];
+    }
     _anchoredArrowDirection = arrowDirection;
     _targetView = displayView;
     _anchorPointView = anchorView;
@@ -834,11 +838,13 @@ static BOOL disableCustomEasing = NO;
 }
 
 - (void)configureForCollectionView:(UICollectionView *)collectionView forCellAtIndexPath:(NSIndexPath *)indexPath {
+    NSAssert(([collectionView class] == [UICollectionView class]), @"View is not collection view");
     _anchorViewParentCollectionView = collectionView;
     _anchorCellIndexPath = indexPath;
 }
 
 - (void)configureForTableView:(UITableView *)tableView forCellAtIndexPath:(NSIndexPath *)indexPath {
+      NSAssert(([tableView class] == [UITableView class]), @"View is not table view");
     _anchorViewParentTableView = tableView;
     _anchorCellIndexPath = indexPath;
 }
