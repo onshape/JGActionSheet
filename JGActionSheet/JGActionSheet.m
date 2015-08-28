@@ -506,6 +506,10 @@ static BOOL disableCustomEasing = NO;
     BOOL _anchoredAtPoint;
     CGPoint _anchorPoint;
     JGActionSheetArrowDirection _anchoredArrowDirection;
+    UIView *_anchorPointView;
+    UICollectionView *_anchorViewParentCollectionView;
+    UITableView *_anchorViewParentTableView;
+    NSIndexPath *_anchorCellIndexPath;
 }
 
 @end
@@ -600,20 +604,30 @@ static BOOL disableCustomEasing = NO;
 }
 
 - (void)orientationChanged {
-    if (_targetView && !CGRectEqualToRect(self.bounds, _targetView.bounds)) {
-        disableCustomEasing = YES;
-        [UIView animateWithDuration:(iPad ? 0.4 : 0.3) delay:0.0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut animations:^{
-            if (_anchoredAtPoint) {
-                [self moveToPoint:_anchorPoint arrowDirection:_anchoredArrowDirection animated:NO];
-            }
-            else {
-                [self layoutSheetInitial:NO];
-            }
-        } completion:^(BOOL finished) {
-            disableCustomEasing = NO;
-        }];
-    }
+    disableCustomEasing = YES;
+    [UIView animateWithDuration:(iPad ? 0.4 : 0.3) delay:0.0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut animations:^{
+    } completion:^(BOOL finished) {
+        disableCustomEasing = NO;
+        if (_anchorViewParentCollectionView) {
+            _anchorPointView = [_anchorViewParentCollectionView cellForItemAtIndexPath:_anchorCellIndexPath];
+            CGPoint p = [self calculateAnchorPointAtView:_anchorPointView inView:_targetView];
+            [self anchorSheetAtPoint:p withArrowDirection:_anchoredArrowDirection availableFrame:_targetView.frame];
+        } else if (_anchorViewParentTableView) {
+            _anchorPointView = [_anchorViewParentTableView cellForRowAtIndexPath:_anchorCellIndexPath];
+            CGPoint p = [self calculateAnchorPointAtView:_anchorPointView inView:_targetView];
+            [self anchorSheetAtPoint:p withArrowDirection:_anchoredArrowDirection availableFrame:_targetView.frame];
+        }else if (_anchorPointView) {
+            CGPoint p = [self calculateAnchorPointAtView:_anchorPointView inView:_targetView];
+            [self anchorSheetAtPoint:p withArrowDirection:_anchoredArrowDirection availableFrame:_targetView.frame];
+        } else if (_anchoredAtPoint) {
+            [self anchorSheetAtPoint:_anchorPoint withArrowDirection:_anchoredArrowDirection availableFrame:_targetView.frame];
+        }
+        else {
+            [self layoutSheetInitial:NO];
+        }
+    }];
 }
+
 
 - (void)buttonPressed:(NSIndexPath *)indexPath {
     if (self.buttonPressedBlock) {
@@ -739,7 +753,7 @@ static BOOL disableCustomEasing = NO;
 #pragma mark Showing
 
 - (void)showInView:(UIView *)view animated:(BOOL)animated {
-    NSAssert(!self.visible, @"Action Sheet is already visisble!");
+    NSAssert(!self.visible, @"Action Sheet is already visible!");
     
     [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
     
@@ -801,10 +815,80 @@ static BOOL disableCustomEasing = NO;
     [self layoutSheetForFrame:frame fitToRect:!iPad initialSetUp:initial continuous:NO];
 }
 
+#pragma mark Showing based on view
+
+- (void)showAtView:(UIView *)anchorView inView:(UIView *)displayView withArrowDirection:(JGActionSheetArrowDirection)arrowDirection animated:(BOOL)isAnimated {
+    NSAssert(!self.visible, @"Action Sheet is already visible!");
+
+    if (!iPad) {
+        return [self showInView:displayView animated:isAnimated];
+    }
+    _anchoredArrowDirection = arrowDirection;
+    _targetView = displayView;
+    _anchorPointView = anchorView;
+
+    [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+
+    CGPoint convertedPoint = [self calculateAnchorPointAtView:anchorView inView:displayView];
+
+    [self moveToPoint:convertedPoint arrowDirection:arrowDirection animated:isAnimated];
+    [self configureActionSheet:displayView animated:isAnimated];
+    self.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    
+}
+
+- (void)configureForCollectionView:(UICollectionView *)collectionView forCellAtIndexPath:(NSIndexPath *)indexPath {
+    NSAssert(([collectionView class] == [UICollectionView class]), @"View is not collection view");
+    _anchorViewParentCollectionView = collectionView;
+    _anchorCellIndexPath = indexPath;
+}
+
+- (void)configureForTableView:(UITableView *)tableView forCellAtIndexPath:(NSIndexPath *)indexPath {
+      NSAssert(([tableView class] == [UITableView class]), @"View is not table view");
+    _anchorViewParentTableView = tableView;
+    _anchorCellIndexPath = indexPath;
+}
+
+- (void)configureActionSheet:(UIView *)displayView animated:(BOOL)isAnimated {
+    if (!iPad) {
+        return [self showInView:displayView animated:isAnimated];
+    }
+
+    if ([self.delegate respondsToSelector:@selector(actionSheetWillPresent:)]) {
+        [self.delegate actionSheetWillPresent:self];
+    }
+
+    void (^completion)(void) = ^{
+        [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+
+        if ([self.delegate respondsToSelector:@selector(actionSheetDidPresent:)]) {
+            [self.delegate actionSheetDidPresent:self];
+        }
+    };
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationChanged) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+    [self layoutForVisible:!isAnimated];
+
+    [_targetView addSubview:self];
+
+    if (!isAnimated) {
+        completion();
+    }
+    else {
+        CGFloat duration = 0.3f;
+
+        [UIView animateWithDuration:duration animations:^{
+            [self layoutForVisible:YES];
+        } completion:^(BOOL finished) {
+            completion();
+        }];
+    }
+}
+
 #pragma mark Showing From Point
 
 - (void)showFromPoint:(CGPoint)point inView:(UIView *)view arrowDirection:(JGActionSheetArrowDirection)arrowDirection animated:(BOOL)animated {
-    NSAssert(!self.visible, @"Action Sheet is already visisble!");
+    NSAssert(!self.visible, @"Action Sheet is already visible!");
     
     if (!iPad) {
         return [self showInView:view animated:animated];
@@ -852,7 +936,6 @@ static BOOL disableCustomEasing = NO;
     if (!iPad) {
         return;
     }
-    
     [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
     
     disableCustomEasing = YES;
@@ -860,7 +943,7 @@ static BOOL disableCustomEasing = NO;
     NSAssert(self.visible, @"Action Sheet requires to be visible in order to move the anchor point!");
     
     void (^changes)(void) = ^{
-        self.frame = _targetView.bounds;
+        self.frame = [self generateBackgroundFrame];
         
         CGRect finalFrame = CGRectZero;
         
@@ -932,7 +1015,8 @@ static BOOL disableCustomEasing = NO;
     _anchoredAtPoint = YES;
     _anchorPoint = point;
     _anchoredArrowDirection = arrowDirection;
-    
+
+    self.frame = [self generateBackgroundFrame];
     CGRect finalFrame = _scrollViewHost.frame;
     
     CGFloat arrowHeight = kArrowHeight;
@@ -1049,4 +1133,36 @@ static BOOL disableCustomEasing = NO;
     return (_targetView != nil);
 }
 
+#pragma mark Point calculation
+
+- (CGPoint)calculateAnchorPointAtView:(UIView *)anchorView inView:(UIView *)parentView {
+    CGPoint anchorPoint;
+    switch (_anchoredArrowDirection) {
+        case JGActionSheetArrowDirectionTop:
+            anchorPoint = CGPointMake(anchorView.bounds.origin.x + anchorView.frame.size.width/2., anchorView.bounds.origin.y + anchorView.frame.size.height);
+            break;
+        case JGActionSheetArrowDirectionBottom:
+            anchorPoint = CGPointMake(anchorView.bounds.origin.x + anchorView.frame.size.width/2., anchorView.bounds.origin.y);
+            break;
+        case JGActionSheetArrowDirectionLeft:
+            anchorPoint = CGPointMake(anchorView.bounds.origin.x + anchorView.frame.size.width, anchorView.bounds.origin.y + anchorView.frame.size.height/2.);
+            break;
+        case JGActionSheetArrowDirectionRight:
+            anchorPoint = CGPointMake(anchorView.bounds.origin.x, anchorView.bounds.origin.y + anchorView.frame.size.height/2.);
+            break;
+        default:
+            break;
+    }
+    CGPoint convertedAnchorPoint = [parentView.window convertPoint:anchorPoint fromView:anchorView];
+    return convertedAnchorPoint;
+}
+
+- (CGRect)generateBackgroundFrame {
+    // TODO: Figure out why frame is visibly shifting (can see white space on rotation), use this until then
+    if (_targetView.bounds.size.width > _targetView.bounds.size.height) {
+        return CGRectMake(0, 0, _targetView.bounds.size.width, _targetView.bounds.size.width);
+    } else {
+        return CGRectMake(0, 0, _targetView.bounds.size.height, _targetView.bounds.size.height);
+    }
+}
 @end

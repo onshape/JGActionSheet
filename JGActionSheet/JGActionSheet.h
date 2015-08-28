@@ -65,7 +65,6 @@ typedef NS_ENUM(NSUInteger, JGActionSheetArrowDirection) {
  */
 @property (nonatomic, strong, readonly) UIView *contentView;
 
-
 /**
  Returns a standard cancel section. The button title is "Cancel" (localized string), and the button style is the cancel button style.
 */
@@ -177,6 +176,17 @@ typedef NS_ENUM(NSUInteger, JGActionSheetArrowDirection) {
  */
 @property (nonatomic, weak) id <JGActionSheetDelegate> delegate;
 
+/*
+ If the sheet was configured as a UICollectionView, this property is available as readonly
+ **/
+
+@property (nonatomic, strong, readonly) UICollectionView *anchorViewParentCollectionView;
+
+/*
+ If the sheet was configured as a UITableView, this property is available as readonly
+ **/
+@property (nonatomic, strong, readonly) UITableView *anchorViewParentTableView;
+
 /**
  A block that is invoked when a button in any section is pressed. Can be used instead of assigning a delegate to the action sheet.
  @param indexPath The index path of the pressed button. (Section, Row)
@@ -247,6 +257,29 @@ typedef NS_ENUM(NSUInteger, JGActionSheetArrowDirection) {
  @param animated Whether the action sheet should be dismissed with an animation.
  */
 - (void)dismissAnimated:(BOOL)animated;
+
+/** 
+ Shows the action sheet anchored to a specific view based on the arrow direction
+ @param anchorView the view that the sheet will be anchored to and the position point will be calculated from
+ @param parentView the hosting view in which the action sheet should be shown
+ @param arrowDirection The direction in which the arrow should show and the side of the section at which the arrow should be placed.
+ @param animated Whether the action sheet should show with an animation.
+
+ @Attention This method is only available on iPad devices.
+ */
+
+- (void)showAtView:(UIView *)anchorView inView:(UIView *)displayView withArrowDirection:(JGActionSheetArrowDirection)arrowDirection animated:(BOOL)isAnimated;
+
+/** 
+ These two methods set variables based on whether or not the parent view of the cell is a table view or collection view
+ **/
+- (void)configureForCollectionView:(UICollectionView *)collectionView forCellAtIndexPath:(NSIndexPath *)indexPath;
+- (void)configureForTableView:(UITableView *)tableView forCellAtIndexPath:(NSIndexPath *)indexPath;
+
+/** 
+ Calculates the point the sheet should be anchored at depending on the view
+ **/
+- (CGPoint)calculateAnchorPointAtView:(UIView *)anchorView inView:(UIView *)parentView;
 
 /**
  Performs a relayout of the view.
