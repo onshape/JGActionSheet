@@ -65,9 +65,6 @@ typedef NS_ENUM(NSUInteger, JGActionSheetArrowDirection) {
  */
 @property (nonatomic, strong, readonly) UIView *contentView;
 
-@property (nonatomic, strong, readonly) UICollectionView *anchorViewParentCollectionView;
-
-@property (nonatomic, strong, readonly) UITableView *anchorViewParentTableView;
 /**
  Returns a standard cancel section. The button title is "Cancel" (localized string), and the button style is the cancel button style.
 */
@@ -178,6 +175,17 @@ typedef NS_ENUM(NSUInteger, JGActionSheetArrowDirection) {
  The delegate of the action sheet.
  */
 @property (nonatomic, weak) id <JGActionSheetDelegate> delegate;
+
+/*
+ If the sheet was configured as a UICollectionView, this property is available as readonly
+ **/
+
+@property (nonatomic, strong, readonly) UICollectionView *anchorViewParentCollectionView;
+
+/*
+ If the sheet was configured as a UITableView, this property is available as readonly
+ **/
+@property (nonatomic, strong, readonly) UITableView *anchorViewParentTableView;
 
 /**
  A block that is invoked when a button in any section is pressed. Can be used instead of assigning a delegate to the action sheet.
